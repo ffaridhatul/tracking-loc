@@ -3,18 +3,18 @@ const fs = require('fs');
 const path = require('path');
 
 // Ambil environment variables (Mendukung semua format Supabase baru & lama)
-const supabaseUrl = process.env.SUPABASE_URL 
-    || process.env.NEXT_PUBLIC_SUPABASE_URL 
-    || '';
+let rawUrl = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
+// Otomatis bersihkan jika ada akhiran /rest/v1 atau trailing slash
+const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
 
-const supabaseKey = process.env.SUPABASE_KEY 
+const supabaseKey = (process.env.SUPABASE_KEY 
     || process.env.SUPABASE_SECRET_KEY 
     || process.env.SUPABASE_PUBLISHABLE_KEY 
     || process.env.SUPABASE_ANON_KEY 
     || process.env.SUPABASE_SERVICE_ROLE_KEY 
     || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY 
     || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY 
-    || '';
+    || '').trim();
 
 let supabase = null;
 const isConfigured = Boolean(supabaseUrl && supabaseKey);
