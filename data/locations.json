@@ -1,5 +1,42 @@
 [
   {
+    "id": "LOG-1794318485478",
+    "timestamp": "2026-11-10T13:48:05.478Z",
+    "localTime": "10/11/2026, 20.48.05 WIB",
+    "clientIp": "::1",
+    "status": "success",
+    "notes": "",
+    "ipData": {
+      "ip": "1.1.1.1",
+      "city": "Test City",
+      "region": "Tidak diketahui",
+      "country": "Tidak diketahui",
+      "postal": "-",
+      "org": "-",
+      "loc": "-"
+    },
+    "coordinates": {
+      "latitude": null,
+      "longitude": null,
+      "accuracy": null,
+      "altitude": null,
+      "speed": null,
+      "mapsUrl": null
+    },
+    "device": {
+      "userAgent": "curl/8.7.1",
+      "platform": "-",
+      "language": "-",
+      "screen": "-",
+      "gpu": "-",
+      "cores": "-",
+      "memory": "-",
+      "network": "-",
+      "battery": null,
+      "timezone": "-"
+    }
+  },
+  {
     "id": "LOG-1794316837636",
     "timestamp": "2026-11-10T13:20:37.636Z",
     "localTime": "10/11/2026, 20.20.37 WIB",
