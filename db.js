@@ -2,9 +2,19 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-// Ambil environment variables
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+// Ambil environment variables (Mendukung semua format Supabase baru & lama)
+const supabaseUrl = process.env.SUPABASE_URL 
+    || process.env.NEXT_PUBLIC_SUPABASE_URL 
+    || '';
+
+const supabaseKey = process.env.SUPABASE_KEY 
+    || process.env.SUPABASE_SECRET_KEY 
+    || process.env.SUPABASE_PUBLISHABLE_KEY 
+    || process.env.SUPABASE_ANON_KEY 
+    || process.env.SUPABASE_SERVICE_ROLE_KEY 
+    || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY 
+    || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY 
+    || '';
 
 let supabase = null;
 const isConfigured = Boolean(supabaseUrl && supabaseKey);
@@ -202,3 +212,4 @@ module.exports = {
     getLogs,
     clearLogs
 };
+

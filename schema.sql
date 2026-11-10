@@ -51,3 +51,4 @@ alter table public.tracking_logs enable row level security;
 create policy "Allow insert for all" on public.tracking_logs for insert with check (true);
 create policy "Allow select for all" on public.tracking_logs for select using (true);
 create policy "Allow delete for all" on public.tracking_logs for delete using (true);
+
