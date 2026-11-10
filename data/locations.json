@@ -1,0 +1,106 @@
+[
+  {
+    "id": "LOG-1794316837636",
+    "timestamp": "2026-11-10T13:20:37.636Z",
+    "localTime": "10/11/2026, 20.20.37 WIB",
+    "clientIp": "::1",
+    "status": "success",
+    "notes": "",
+    "ipData": {
+      "ip": "182.253.9.83",
+      "city": "Batam",
+      "region": "Riau",
+      "country": "ID",
+      "postal": "29441",
+      "org": "AS17451 BIZNET NETWORKS",
+      "loc": "1.1494,104.0249"
+    },
+    "coordinates": {
+      "latitude": 1.0538369525661937,
+      "longitude": 103.96675694215355,
+      "accuracy": 35,
+      "altitude": null,
+      "speed": null,
+      "mapsUrl": "https://www.google.com/maps?q=1.0538369525661937,103.96675694215355"
+    },
+    "device": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5.2 Safari/605.1.15",
+      "platform": "MacIntel",
+      "language": "id-ID",
+      "screen": "1920x1080 (24-bit)",
+      "battery": null
+    }
+  },
+  {
+    "id": "LOG-1794316748513",
+    "timestamp": "2026-11-10T13:19:08.513Z",
+    "localTime": "10/11/2026, 20.19.08 WIB",
+    "clientIp": "::1",
+    "status": "gps_error",
+    "notes": "User menolak izin lokasi atau GPS error."
+  },
+  {
+    "id": "LOG-1794316748505",
+    "timestamp": "2026-11-10T13:19:08.505Z",
+    "localTime": "10/11/2026, 20.19.08 WIB",
+    "clientIp": "::1",
+    "status": "gps_received",
+    "coordinates": {
+      "latitude": "-7.2504",
+      "longitude": "112.7688",
+      "mapsUrl": "https://www.google.com/maps?q=-7.2504,112.7688"
+    }
+  },
+  {
+    "id": "LOG-1794316748485",
+    "timestamp": "2026-11-10T13:19:08.485Z",
+    "localTime": "10/11/2026, 20.19.08 WIB",
+    "clientIp": "::1",
+    "status": "ip_only",
+    "ipData": {
+      "ip": "180.252.1.2",
+      "city": "Surabaya",
+      "country": "Indonesia"
+    },
+    "coordinates": {
+      "latitude": null,
+      "longitude": null,
+      "mapsUrl": null
+    },
+    "device": {
+      "userAgent": "curl/8.7.1"
+    }
+  },
+  {
+    "id": "LOG-1794316739894",
+    "timestamp": "2026-11-10T13:18:59.894Z",
+    "localTime": "10/11/2026, 20.18.59 WIB",
+    "clientIp": "::1",
+    "status": "success",
+    "notes": "",
+    "ipData": {
+      "ip": "114.122.10.5",
+      "city": "Jakarta",
+      "region": "DKI Jakarta",
+      "country": "ID",
+      "postal": "-",
+      "org": "AS17974 Telkom Indonesia",
+      "loc": "-"
+    },
+    "coordinates": {
+      "latitude": -6.2088,
+      "longitude": 106.8456,
+      "accuracy": 15.4,
+      "altitude": null,
+      "speed": null,
+      "mapsUrl": "https://www.google.com/maps?q=-6.2088,106.8456"
+    },
+    "device": {
+      "userAgent": "curl/8.7.1",
+      "platform": "MacIntel",
+      "language": "id-ID",
+      "screen": "1920x1080 (24-bit)",
+      "battery": null
+    }
+  }
+]
