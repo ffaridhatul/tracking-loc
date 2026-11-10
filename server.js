@@ -220,7 +220,7 @@ app.post('/api/logs/clear', (req, res) => {
 });
 
 // ==========================================
-// 4. ENDPOINT COMPATIBILITY (LEGACY)
+// 4. ENDPOINT COMPATIBILITY (LEGACY).
 // ==========================================
 app.post('/log', (req, res) => {
     const data = req.body;
