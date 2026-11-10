@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const db = require('./db');
 
 const app = express();
@@ -22,7 +23,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Melayani file frontend statis
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
+
+// Endpoint Halaman Utama (UI Verifikasi)
+app.get(['/', '/index.html'], (req, res) => {
+    const candidatePaths = [
+        path.join(__dirname, 'index.html'),
+        path.join(__dirname, 'public', 'index.html'),
+        path.join(process.cwd(), 'index.html'),
+        path.join(process.cwd(), 'public', 'index.html')
+    ];
+
+    for (const p of candidatePaths) {
+        if (fs.existsSync(p)) {
+            return res.sendFile(p);
+        }
+    }
+
+    res.status(404).send('File index.html tidak ditemukan.');
+});
 
 // ==========================================
 // 1. ENDPOINT STATUS & HEALTH
